@@ -3,9 +3,10 @@ const router = express.Router();
 
 import { driveService } from "../lib/service-loader";
 
-router.get("/get", async (req, res) => {
+router.get("/", async (req, res) => {
   const { vcFileId } = req.body;
-  const vc = driveService.getFile(vcFileId);
+  const vcBuffer = await driveService.getFile(vcFileId);
+  const vc = vcBuffer.toString();
   res.send({ vc });
 });
 

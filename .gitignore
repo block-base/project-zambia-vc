@@ -120,5 +120,8 @@ dist
 # for mac
 .DS_Store
 
+# backend
+packages/backend/credentials.json
+
 # frontend
 packages/frontend/.next

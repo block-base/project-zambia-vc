@@ -3,7 +3,7 @@ const router = express.Router();
 
 import { vcService } from "../lib/service-loader";
 
-router.post("/verify", async (req, res) => {
+router.post("/", async (req, res) => {
   const { vc } = req.body;
   const result = await vcService.verify(vc);
   res.send(result);

@@ -1,6 +1,6 @@
-export type DriveName = "local" | "google";
-export type DidName = "ion";
-export type KmsName = "local" | "azure";
+export type DriveName = "google";
+export type VcDid = "ion";
+export type VcKms = "local";
 
 export interface Payload {
   [key: string]: string;

@@ -1,12 +1,12 @@
 export interface IDriveService {
   uploadFile: (
-    type: string,
-    path: string,
+    folderId: string,
+    mimeType: string,
     name: string,
     file: Buffer
-  ) => string;
+  ) => Promise<string>;
 
-  getFile: (fileId: string) => Buffer;
+  getFile: (fileId: string) => Promise<Buffer>;
 
   getDownloadURI: (fileId: string) => string;
 }
