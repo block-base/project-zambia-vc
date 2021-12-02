@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import React from "react";
+
 import { useScanner } from "./useScanner";
 
 const QrReader = dynamic(() => import("react-qr-reader"), { ssr: false });

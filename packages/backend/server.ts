@@ -1,6 +1,5 @@
-import express from "express";
-
 import cors from "cors";
+import express from "express";
 
 import { env } from "./src/config/env";
 

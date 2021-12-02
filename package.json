@@ -6,11 +6,15 @@
     "packages//**"
   ],
   "scripts": {
+    "ci": "yarn lint && yarn build",
     "format": "prettier . --ignore-path .gitignore --write",
     "lint": "eslint --ext .ts,.tsx . --ignore-path .gitignore",
     "dev": "run-p dev:*",
     "dev:backend": "yarn workspace backend dev",
-    "dev:frontend": "yarn workspace frontend dev"
+    "dev:frontend": "yarn workspace frontend dev",
+    "build": "run-p build:*",
+    "build:backend": "yarn workspace backend build",
+    "build:frontend": "yarn workspace frontend build"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.5.0",
