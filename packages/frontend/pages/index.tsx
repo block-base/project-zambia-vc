@@ -1,5 +1,7 @@
-const IndexPage = () => {
-  return <div></div>;
+import { Verifier } from "../components/organisms/Verifier";
+
+const ScannerPage = () => {
+  return <Verifier />;
 };
 
-export default IndexPage;
+export default ScannerPage;
