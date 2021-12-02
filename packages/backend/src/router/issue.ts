@@ -9,7 +9,7 @@ import { generateQRCode } from "../lib/utils/qrcode";
 import { hmacAuthMiddleWare } from "../middleware/auth/hmac";
 
 const router = express.Router();
-// router.use(hmacAuthMiddleWare);
+router.use(hmacAuthMiddleWare);
 
 router.post("/", async (req, res) => {
   const { userId, credentialSubject, displayElements } = req.body;

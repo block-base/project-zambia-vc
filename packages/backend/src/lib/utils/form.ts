@@ -1,8 +1,8 @@
+import ejs from "ejs";
 import * as fs from "fs";
+import nodeHtmlToImage from "node-html-to-image";
 import * as path from "path";
 
-import ejs from "ejs";
-import nodeHtmlToImage from "node-html-to-image";
 import { Payload } from "../types";
 
 export const generateForm = async (qrCode: string, payload: Payload) => {
