@@ -122,6 +122,11 @@ dist
 
 # backend
 packages/backend/credentials.json
+packages/backend/drive/vc/*
+packages/backend/drive/form/*
+!packages/backend/drive/vc/.gitkeep
+!packages/backend/drive/form/.gitkeep
+
 
 # frontend
 packages/frontend/.next
