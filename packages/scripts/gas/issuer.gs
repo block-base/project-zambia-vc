@@ -1,89 +1,68 @@
 function issuerRequest() {
-  let apiURL = "https://5e55-240d-1a-767-6100-390a-6482-be91-4224.ngrok.io/issue";
+  const apiURL = "https://9f8b-2407-c800-4f13-105-3546-dbac-4661-2759.ngrok.io/issue";
+  const secret = "secret"
 
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = spreadsheet.getSheetByName("Zambia_VC");
-  var VCcreated = sheet.getRange("J:J").getValues();
-  var cellB = sheet.getRange("B:B").getValues();
-  var result = [];
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getSheetByName('manage VC');
+  const maxRow = sheet.getLastRow();
+  const maxColumn = sheet.getLastColumn();
+  const isVcIssued = sheet.getRange('K:K').getValues();
 
-  for (var i = 1; i < VCcreated.length; i++) {
-    if (VCcreated[i] == "" && cellB[i] != "") {
-      let col = sheet
-        .getRange(i + 1, 2, 1, 8)
-        .getValues()
-        .flat();
-      if (col[7] == "Yes") {
-        col[7] = true;
-      } else if (col[7] == "No") {
-        col[7] = false;
-      } else {
-        col[7] = undefined;
-      }
-      result = [
-        ...result,
-        {
-          index: i + 1,
-          borrower: col[0],
-          age_over_16: col[1] == "Yes" ? true : false,
-          loan_count: Number(col[2]),
-          identity_proofing: col[3],
-          address: col[4] == "" ? undefined : col[4],
-          loan_amount: Number(col[5]) == "" ? undefined : Number(col[5]),
-          times_received_loan: Number(col[6]) == "" ? undefined : Number(col[6]),
-          training_completed: col[7],
-        },
-      ];
-    }
+  // 1行目の文字列をKeyにしたjsonの配列を作成
+  const keys = [];
+  const data = [];
+  for (let x = 1; x <= maxColumn - 3; x++) {
+    keys.push(sheet.getRange(1, x).getValue());
   }
-  Logger.log(result);
+  for (let y = 2; y <= maxRow; y++) {
+    if (isVcIssued[y-1] == "〇") continue
+    let json = {};
+    for (let x = 1; x <= maxColumn -3 ; x++) {
+      json[keys[x-1]] = sheet.getRange(y, x).getValue() || undefined;
+    }
+    json["rowNumber"] = y   
+    data.push(json);
+  }
 
-  //post部分
-  for (var i = 0; i < result.length; i++) {
-    let payload = {
+  for (let i = 0; i < data.length; i++) {
+    const training_completed = data[i].training_completed =="Yes" ? true : data[i].training_completed =="No" ? false:  undefined;
+    const payload = {
       credentialSubject: {
-        borrower: result[i].borrower,
-        age_over_16: result[i].age_over_16,
-        loan_count: result[i].loan_count,
-        identity_proofing: result[i].identity_proofing,
-        address: result[i].address,
-        loan_amount: result[i].loan_amount,
-        times_received_loan: result[i].times_received_loan,
-        training_completed: result[i].training_completed,
+        "address": data[i].address,
+        "age_over_16": data[i].age_over_16 == "Yes",
+        "borrower": data[i].borrower,
+        "identity_proofing": data[i].identity_proofing,
+        "loan_count": data[i].loan_count,
+        "loan_amount": data[i].loan_amount,
+        "times_received_loan": data[i].times_received_loan,
+        "training_completed": training_completed,
       },
-    };
-    var headers = {
-      "Content-Type": "application/json",
-    };
+      displayElements:["borrower"],
+      userId: data[i].uid,
+    }
 
-    //HTTP POSTで前述で設定したパラメーターをオプションで設定する。
-    let options = {
-      method: "post",
-      payload: JSON.stringify(payload),
-      headers: headers,
+    const contentString = JSON.stringify(payload)
+    const signature = Utilities.computeHmacSignature(Utilities.MacAlgorithm.HMAC_SHA_256, contentString, secret);
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization':  "HMAC_SHA_256 " + Utilities.base64Encode(signature)
+    }
+
+    const options = {
+      'method': 'post',
+      'payload': contentString,
+      'headers': headers,
       muteHttpExceptions: true,
     };
-
-    //APIにPOSTリクエストし、結果をログ出力する
-    let responseDataPOST = UrlFetchApp.fetch(apiURL, options);
-    console.log(responseDataPOST.getResponseCode());
-    console.log(responseDataPOST.getContentText());
+    const responseDataPOST = UrlFetchApp.fetch(apiURL, options);
+    Logger.log(responseDataPOST.getResponseCode())
 
     if (responseDataPOST.getResponseCode() == "200") {
-      sheet.getRange(result[i].index, 10).setValue("〇");
-
-      //現在時刻を表示
-      var now = new Date();
-      var year = now.getFullYear();
-      var month = now.getMonth() + 1;
-      var date = now.getDate();
-      var hour = now.getHours();
-      var minute = now.getMinutes();
-      var second = now.getSeconds();
-
-      //入力したい文字列に整形する
-      var nowDate = year + "/" + month + "/" + date + "  " + hour + ":" + minute + ":" + second;
-      sheet.getRange(result[i].index, 11).setValue(nowDate);
+      sheet.getRange(data[i].rowNumber, maxColumn - 2).setValue("〇")
+      const nowDate =  Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM-dd HH:mm:ss');
+      sheet.getRange(data[i].rowNumber, maxColumn - 1).setValue(nowDate)
+      sheet.getRange(data[i].rowNumber, maxColumn).setValue(JSON.parse(responseDataPOST.getContentText()).formDownloadURI)
     }
   }
-}
+};
+
