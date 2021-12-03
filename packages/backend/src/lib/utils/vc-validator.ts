@@ -1,6 +1,6 @@
-import { Payload, SupportedCredentialType } from "../types";
-
 import Ajv from "ajv";
+
+import { Payload, SupportedCredentialType } from "../types";
 
 const ajv = new Ajv();
 
