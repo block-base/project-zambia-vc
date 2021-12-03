@@ -3,7 +3,6 @@ import { RequestHandler } from "express";
 
 import { env } from "../../config/env";
 
-//TODO: use more value to add security
 export const hmacAuthMiddleWare: RequestHandler = (req, res, next) => {
   const { body, headers } = req;
   if (!headers.authorization) {

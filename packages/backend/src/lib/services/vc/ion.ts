@@ -31,7 +31,6 @@ export class IonVcService implements IVcService {
       await this.crypto.generateKey(KeyUse.Signature, "update");
       did = await new LongFormDid(this.crypto).serialize();
     } else {
-      //TODO: implement using azure key vault
       throw new Error("not implemented");
     }
     this.crypto.builder.useDid(did);
@@ -46,14 +45,11 @@ export class IonVcService implements IVcService {
       sub: this.crypto.builder.did, // actually not required sub for current use case, but sdk requires it...
       vc: {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
-        //TODO: implement various kinds of credential type
         type: ["VerifiableCredential", "Credential"],
         credentialSubject: payload,
       },
     };
-    const signature = await this.crypto
-      .signingProtocol(JoseBuilder.JWT)
-      .sign(credentials);
+    const signature = await this.crypto.signingProtocol(JoseBuilder.JWT).sign(credentials);
     return signature.serialize();
   }
 
