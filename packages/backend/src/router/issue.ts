@@ -10,10 +10,11 @@ import { validateSchema } from "../lib/utils/vc-validator";
 import { hmacAuthMiddleWare } from "../middleware/auth/hmac";
 
 const router = express.Router();
-// router.use(hmacAuthMiddleWare);
+router.use(hmacAuthMiddleWare);
 
 router.post("/", async (req, res) => {
   const { userId, credentialSubject, displayElements } = req.body;
+  console.log(req.body, "req.body");
   const now = moment().format("YYYYMMDDHHmmss");
   const credentialType = "Credential";
   if (!validateSchema(credentialType, credentialSubject)) {
@@ -23,6 +24,7 @@ router.post("/", async (req, res) => {
   const vcFileId = await driveService.uploadFile(env.driveVcFolder, `${userId}-${now}`, "json", Buffer.from(vc));
   const qrCode = await generateQRCode(vcFileId);
   const displayPayload: Payload = {};
+  console.log(displayElements, "displayElements");
   displayElements.forEach((displayElement: string) => {
     displayPayload[displayElement] = credentialSubject[displayElement];
   });
