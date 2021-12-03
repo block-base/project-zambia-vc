@@ -1,7 +1,7 @@
 import { drive_v3, google } from "googleapis";
 
 import { IDriveService } from "../../interfaces/drive";
-import { DriveSupportedExt } from "../../types";
+import { SupportedExt } from "../../types";
 import { bufferToReadableStream } from "../../utils/stream";
 
 export class GoogleDriveService implements IDriveService {
@@ -17,7 +17,7 @@ export class GoogleDriveService implements IDriveService {
     });
   }
 
-  async uploadFile(folder: string, name: string, ext: DriveSupportedExt, file: Buffer) {
+  async uploadFile(folder: string, name: string, ext: SupportedExt, file: Buffer) {
     const mimeType = {
       png: "image/png",
       json: "application/json",

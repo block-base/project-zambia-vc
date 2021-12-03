@@ -9,7 +9,7 @@ import {
 } from "verifiablecredentials-verification-sdk-typescript";
 
 import { IVcService } from "../../interfaces/vc";
-import { Payload, VcKms } from "../../types";
+import { Payload, SupportedCredentialType, VcKms } from "../../types";
 
 export class IonVcService implements IVcService {
   private crypto: Crypto;
@@ -36,7 +36,7 @@ export class IonVcService implements IVcService {
     this.crypto.builder.useDid(did);
   };
 
-  async issue(payload: Payload) {
+  async issue(credentialType: SupportedCredentialType, credentialSubject: Payload) {
     if (!this.crypto.builder.did) {
       throw new Error("did not initialized");
     }
@@ -45,8 +45,8 @@ export class IonVcService implements IVcService {
       sub: this.crypto.builder.did, // actually not required sub for current use case, but sdk requires it...
       vc: {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
-        type: ["VerifiableCredential", "Credential"],
-        credentialSubject: payload,
+        type: ["VerifiableCredential", credentialType],
+        credentialSubject,
       },
     };
     const signature = await this.crypto.signingProtocol(JoseBuilder.JWT).sign(credentials);

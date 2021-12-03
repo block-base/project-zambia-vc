@@ -3,12 +3,12 @@ import * as path from "path";
 
 import { env } from "../../../config/env";
 import { IDriveService } from "../../interfaces/drive";
-import { DriveSupportedExt } from "../../types";
+import { SupportedExt } from "../../types";
 
 const base = path.join(__dirname, "..", "..", "..", "..", "drive");
 
 export class LocalDriveService implements IDriveService {
-  async uploadFile(folder: string, name: string, ext: DriveSupportedExt, file: Buffer) {
+  async uploadFile(folder: string, name: string, ext: SupportedExt, file: Buffer) {
     if (folder !== "form" && folder !== "vc") {
       throw new Error("folder invalid");
     }
