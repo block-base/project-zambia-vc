@@ -1,10 +1,7 @@
+import { DriveSupportedExt } from "../types";
+
 export interface IDriveService {
-  uploadFile: (
-    folderId: string,
-    mimeType: string,
-    name: string,
-    file: Buffer
-  ) => Promise<string>;
+  uploadFile: (folder: string, name: string, ext: DriveSupportedExt, file: Buffer) => Promise<string>;
 
   getFile: (fileId: string) => Promise<Buffer>;
 
