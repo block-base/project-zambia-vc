@@ -1,6 +1,6 @@
-import { Payload } from "../types";
+import { Payload, SupportedCredentialType } from "../types";
 
 export interface IVcService {
-  issue: (payload: Payload) => Promise<string>;
+  issue: (credentialType: SupportedCredentialType, credentialSubject: Payload) => Promise<string>;
   verify: (vc: string) => Promise<boolean>;
 }

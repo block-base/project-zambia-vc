@@ -6,6 +6,7 @@ import { driveService, vcService } from "../lib/service-loader";
 import { Payload } from "../lib/types";
 import { generateForm } from "../lib/utils/form";
 import { generateQRCode } from "../lib/utils/qrcode";
+import { validateSchema } from "../lib/utils/vc-validator";
 import { hmacAuthMiddleWare } from "../middleware/auth/hmac";
 
 const router = express.Router();
@@ -14,7 +15,11 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const { userId, credentialSubject, displayElements } = req.body;
   const now = moment().format("YYYYMMDDHHmmss");
-  const vc = await vcService.issue(credentialSubject);
+  const credentialType = "Credential";
+  if (!validateSchema(credentialType, credentialSubject)) {
+    throw new Error("credential subject invalid");
+  }
+  const vc = await vcService.issue(credentialType, credentialSubject);
   const vcFileId = await driveService.uploadFile(env.driveVcFolder, `${userId}-${now}`, "json", Buffer.from(vc));
   const qrCode = await generateQRCode(vcFileId);
   const displayPayload: Payload = {};
