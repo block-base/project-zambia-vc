@@ -16,12 +16,7 @@ export class GoogleDriveService implements IDriveService {
     });
   }
 
-  async uploadFile(
-    folderId: string,
-    mimeType: string,
-    name: string,
-    file: Buffer
-  ) {
+  async uploadFile(folderId: string, mimeType: string, name: string, file: Buffer) {
     const res = await this.drive.files.create({
       requestBody: {
         name,
