@@ -13,26 +13,16 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { userId, credentialSubject, displayElements } = req.body;
-  const now = moment().format("YYYY-MM-DD HH:mm:ss");
+  const now = moment().format("YYYYMMDDHHmmss");
   const vc = await vcService.issue(credentialSubject);
-  const vcFileId = await driveService.uploadFile(
-    env.driveVcFolder,
-    "application/json",
-    `${userId}-${now}.json`,
-    Buffer.from(vc)
-  );
+  const vcFileId = await driveService.uploadFile(env.driveVcFolder, `${userId}-${now}`, "json", Buffer.from(vc));
   const qrCode = await generateQRCode(vcFileId);
   const displayPayload: Payload = {};
   displayElements.forEach((displayElement: string) => {
     displayPayload[displayElement] = credentialSubject[displayElement];
   });
   const formBuffer = await generateForm(qrCode, displayPayload);
-  const formFileId = await driveService.uploadFile(
-    env.driveFormFolder,
-    "image/png",
-    `${userId}-${now}.png`,
-    formBuffer
-  );
+  const formFileId = await driveService.uploadFile(env.driveFormFolder, `${userId}-${now}`, "png", formBuffer);
   const formDownloadURI = driveService.getDownloadURI(formFileId);
   res.send({ vcFileId, formDownloadURI });
 });

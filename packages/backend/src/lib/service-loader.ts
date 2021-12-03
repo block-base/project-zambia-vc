@@ -1,10 +1,13 @@
 import { env } from "../config/env";
 import { GoogleDriveService } from "./services/drive/google";
+import { LocalDriveService } from "./services/drive/local";
 import { IonVcService } from "./services/vc/ion";
 import { DriveName, VcDid, VcKms } from "./types";
 
 const getDriveService = (driveName: DriveName) => {
-  if (driveName === "google") {
+  if (driveName === "local") {
+    return new LocalDriveService();
+  } else if (driveName === "google") {
     return new GoogleDriveService();
   } else {
     throw new Error("not implemented");
