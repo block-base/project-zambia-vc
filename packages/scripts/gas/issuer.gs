@@ -1,5 +1,5 @@
 function issuerRequest() {
-  const apiURL = "https://18a6-2407-c800-4f13-105-3546-dbac-4661-2759.ngrok.io/issue";
+  const apiURL = "https://9f8b-2407-c800-4f13-105-3546-dbac-4661-2759.ngrok.io/issue";
   const secret = "secret"
 
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -11,20 +11,20 @@ function issuerRequest() {
   // 1行目の文字列をKeyにしたjsonの配列を作成
   const keys = [];
   const data = [];
-  for (let x = 1; x <= maxColumn - 2; x++) {
+  for (let x = 1; x <= maxColumn - 3; x++) {
     keys.push(sheet.getRange(1, x).getValue());
   }
   for (let y = 2; y <= maxRow; y++) {
+    if (isVcIssued[y-1] == "〇") continue
     let json = {};
-    for (let x = 1; x <= maxColumn -2 ; x++) {
+    for (let x = 1; x <= maxColumn -3 ; x++) {
       json[keys[x-1]] = sheet.getRange(y, x).getValue() || undefined;
-    }    
+    }
+    json["rowNumber"] = y   
     data.push(json);
   }
 
   for (let i = 0; i < data.length; i++) {
-    if (isVcIssued[i + 1] == "〇") return
-    console.log(data[i])
     const training_completed = data[i].training_completed =="Yes" ? true : data[i].training_completed =="No" ? false:  undefined;
     const payload = {
       credentialSubject: {
@@ -58,12 +58,11 @@ function issuerRequest() {
     Logger.log(responseDataPOST.getResponseCode())
 
     if (responseDataPOST.getResponseCode() == "200") {
-      sheet.getRange(i + 2, maxColumn - 1).setValue("〇")
+      sheet.getRange(data[i].rowNumber, maxColumn - 2).setValue("〇")
       const nowDate =  Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM-dd HH:mm:ss');
-      sheet.getRange(i + 2, maxColumn).setValue(nowDate)
+      sheet.getRange(data[i].rowNumber, maxColumn - 1).setValue(nowDate)
+      sheet.getRange(data[i].rowNumber, maxColumn).setValue(JSON.parse(responseDataPOST.getContentText()).formDownloadURI)
     }
-
   }
-
 };
 
