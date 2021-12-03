@@ -3,12 +3,10 @@ import * as fs from "fs";
 import nodeHtmlToImage from "node-html-to-image";
 import * as path from "path";
 
-import { Payload } from "../types";
+import { Payload } from "../../types";
 
 export const generateForm = async (qrCode: string, payload: Payload) => {
-  const template = fs.readFileSync(
-    path.join(__dirname, "..", "..", "forms", "vc.ejs")
-  );
+  const template = fs.readFileSync(path.join(__dirname, "template.ejs"));
   const html = ejs.render(template.toString(), { qrCode, payload });
   const image = await nodeHtmlToImage({
     html,
