@@ -12,7 +12,7 @@ export const hmacAuthMiddleWare: RequestHandler = (req, res, next) => {
   if (schema !== "HMAC_SHA_256") {
     throw new Error("authorization schema invalid");
   }
-  const contentString = JSON.stringify(body, Object.keys(body).sort());
+  const contentString = JSON.stringify(body);
   const contentHash = crypto.createHash("sha256").update(contentString).digest("base64");
   const expectedSignature = crypto.createHmac("sha256", env.authSecret).update(contentHash).digest("base64");
   if (signature !== expectedSignature) {
